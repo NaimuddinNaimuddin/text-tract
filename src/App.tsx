@@ -61,8 +61,8 @@ function App() {
     const client = new TextractClient({
       region: "ap-south-1",
       credentials: {
-        accessKeyId: "AKIAU2ZE3AZJZ426IVNX",
-        secretAccessKey: "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",
+        accessKeyId: import.meta.env.VITE_ACCESS_KEY,
+        secretAccessKey: import.meta.env.VITE_SECRET_KEY,
       },
     });
     // convert image to byte Uint8Array base 64
@@ -121,7 +121,7 @@ function App() {
 
         <div style={{ borderLeft: "1px solid #eee", width: '50%', padding: '0px 10px', height: '490px', overflowY: 'scroll' }}>
           <h5 className="text-center border"> Results </h5>
-          {!!loading && (<div className="text-center"> Loading... </div>)}
+          {!!loading && (<h4 className="text-center"> Loading... </h4>)}
           {data?.map((item: { Text: string; BlockType: string; }, index) => {
             return (
               <div key={index} className="">
