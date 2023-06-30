@@ -2,6 +2,13 @@
   padding: 2em;
 }
 
+.logo {
+  width: 100px;
+  position: absolute;
+  top: 20px;
+  left: 35px;
+}
+
 .read-the-docs {
   color: #888;
 }
@@ -10,11 +17,26 @@
   display: flex;
 }
 
-.border {
-  border: 1px soild #eee;
-  background: #eee;
+.bg-e {
+  background: #edf2fa;
 }
-.radio{
+
+.radio {
   padding: 10px;
   margin: 7px 10px 10px 10px;
+}
+
+.br-btn {
+  border-radius: 0px 5px 5px 0px;
+}
+
+.br-file {
+  border-radius: 5px 0px 0px 5px;
+}
+
+.ocr-results-cont {
+  border-left: 2px dashed #bbb;
+  width: 50%;
+  height: 660px;
+  overflow-y: auto;
 }

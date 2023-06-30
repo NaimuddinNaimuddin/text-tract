@@ -30,7 +30,6 @@ function App() {
 
   const onSelectFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) {
-      alert('Please Select File');
       return;
     }
     const file: any = e.target.files[0];
@@ -62,6 +61,14 @@ function App() {
   };
 
   const onRunOCR = async () => {
+    if (!type) {
+      alert('Please Select OCR.');
+      return;
+    }
+    if (!fileType) {
+      alert('Please Select File.');
+      return;
+    }
     const client = new TextractClient({
       region: "ap-south-1",
       credentials: {
@@ -75,7 +82,7 @@ function App() {
       blob = Buffer.from(src, "base64");
     }
     if (fileType.indexOf('image') !== -1) {
-      blob = preview;
+      blob = Buffer.from(preview, "base64");
     }
     const params = {
       Document: { Bytes: blob, },
@@ -83,10 +90,6 @@ function App() {
     };
     const command = new DetectDocumentTextCommand(params);
     try {
-      if (!type) {
-        alert('Please Select API Type');
-        return;
-      }
       if (type === 'AWS') {
         setLoading(true);
         const data = await client.send(command);
@@ -103,47 +106,50 @@ function App() {
 
   return (
     <div className="App">
-      <h4 className="mb-2 text-center mt-2">Handwriting Text Extraction OCR</h4>
-      <div className="flex justify-content-center">
+      <div className="text-center fs-4 fw-bold">
+        <img className="logo" src="http://139.59.81.207/hrms/public/uploads/organisation/organisation_image_1651816504.jpg"
+          alt="LOGO" />
+        Handwriting Text Extraction OCR</div>
+      <div className="flex justify-content-center mt-2 mb-1 fst-italic fw-normal"
+        onChange={(e: any) => setType(e.target.value)}>
+        Select OCR :
+        <input className="radio" type="radio" value="AWS" name="type" /> AWS
+        <input className="radio" type="radio" value="MICROSOFT" name="type" /> Microsoft
+        <input className="radio" type="radio" value="GOOGLE" name="type" /> Google
+      </div>
+      <div className="flex justify-content-center mb-3">
         <input
           style={{ width: '26%' }}
-          className="inputfile form-control"
+          className="inputfile form-control br-file"
           id="file"
           type="file"
           name="file"
           onChange={onSelectFile}
         />
-      </div>
-      <div className="flex justify-content-center mt-2"
-        onChange={(e: any) => setType(e.target.value)}>
-        <input className="radio" type="radio" value="AWS" name="type" /> AWS
-        <input className="radio" type="radio" value="MICROSOFT" name="type" /> Microsoft
-        <input className="radio" type="radio" value="GOOGLE" name="type" /> Google
-      </div>
-      <div className="flex justify-content-center">
-        <button onClick={onRunOCR} className="btn btn-primary mb-2">
+        <button onClick={onRunOCR} className="btn btn-primary ml-2 br-btn">
           SUBMIT
         </button>
       </div>
-
       <div className="flex justify-content-between">
         <div style={{ width: '50%' }}>
-          <h5 className="text-center border"> PDF/Image </h5>
+          <div className="text-center bg-e pb-1 text-primary fs-5"> Uploaded Document </div>
           {fileType.indexOf('image') !== -1 ?
             <img width="100%" src={preview} alt="PREVIEW" /> :
-            <object width="100%" height="490" data={preview} type="application/pdf">   </object>}
+            <object width="100%" height="620" data={preview} type="application/pdf">   </object>}
         </div>
 
-        <div style={{ borderLeft: "1px solid #eee", width: '50%', padding: '0px 10px', height: '490px', overflowY: 'scroll' }}>
-          <h5 className="text-center border"> Results </h5>
-          {!!loading && (<h4 className="text-center"> Loading... </h4>)}
-          {data?.map((item: { Text: string; BlockType: string; }, index) => {
-            return (
-              <div key={index} className="">
-                {item.Text}
-              </div>
-            );
-          })}
+        <div className="ocr-results-cont">
+          <div className="text-center bg-e pb-1 text-primary fs-5 "> OCR Results </div>
+          <div className="p-3">
+            {!!loading && (<h4 className="text-center"> Loading... </h4>)}
+            {data?.map((item: { Text: string; BlockType: string; }, index) => {
+              return (
+                <div key={index} className="">
+                  {item.Text}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
