@@ -11,8 +11,8 @@ import "./App.css";
 function App() {
   const [src, setSrc] = useState("");
   const [preview, setPreview] = useState("");
+  const [fileType, setFileType] = useState("");
   const [loading, setLoading] = useState(false);
-  console.log(src, "src");
   const [type, setType] = useState("");
   const [data, setData] = useState([]);
 
@@ -30,16 +30,20 @@ function App() {
 
   const onSelectFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) {
+      alert('Please Select File');
       return;
     }
-    const file = e.target.files[0];
+    const file: any = e.target.files[0];
+    setFileType(file.type);
     const reader = new FileReader();
     reader.onload = function (upload: ProgressEvent<FileReader>) {
       setPreview(upload?.target?.result as string);
     };
     reader.readAsDataURL(file);
-    const pdfArrayBuffer = await readFileAsync(file);
-    splitPDF(pdfArrayBuffer);
+    if (file.type === 'application/pdf') {
+      const pdfArrayBuffer = await readFileAsync(file);
+      splitPDF(pdfArrayBuffer);
+    }
   };
 
   const splitPDF = async (pdfFilePath: any) => {
@@ -66,14 +70,23 @@ function App() {
       },
     });
     // convert image to byte Uint8Array base 64
-    const blob = Buffer.from(src, "base64");
-    console.log(blob, "blob")
+    let blob: any;
+    if (fileType === 'application/pdf') {
+      blob = Buffer.from(src, "base64");
+    }
+    if (fileType.indexOf('image') !== -1) {
+      blob = preview;
+    }
     const params = {
       Document: { Bytes: blob, },
       FeatureTypes: ["TABLES", "FORMS"],
     };
     const command = new DetectDocumentTextCommand(params);
     try {
+      if (!type) {
+        alert('Please Select API Type');
+        return;
+      }
       if (type === 'AWS') {
         setLoading(true);
         const data = await client.send(command);
@@ -84,7 +97,7 @@ function App() {
       }
     } catch (error) {
       setLoading(false);
-      console.log("err", error);
+      alert('Something went wrong.');
     }
   };
 
@@ -93,7 +106,7 @@ function App() {
       <h4 className="mb-2 text-center mt-2">Handwriting Text Extraction OCR</h4>
       <div className="flex justify-content-center">
         <input
-          style={{ width: '30%' }}
+          style={{ width: '26%' }}
           className="inputfile form-control"
           id="file"
           type="file"
@@ -108,7 +121,7 @@ function App() {
         <input className="radio" type="radio" value="GOOGLE" name="type" /> Google
       </div>
       <div className="flex justify-content-center">
-        <button onClick={onRunOCR} style={{ margin: "10px" }} className="btn btn-primary">
+        <button onClick={onRunOCR} className="btn btn-primary mb-2">
           SUBMIT
         </button>
       </div>
@@ -116,7 +129,9 @@ function App() {
       <div className="flex justify-content-between">
         <div style={{ width: '50%' }}>
           <h5 className="text-center border"> PDF/Image </h5>
-          <object width="100%" height="490" data={preview} type="application/pdf">   </object>
+          {fileType.indexOf('image') !== -1 ?
+            <img width="100%" src={preview} alt="PREVIEW" /> :
+            <object width="100%" height="490" data={preview} type="application/pdf">   </object>}
         </div>
 
         <div style={{ borderLeft: "1px solid #eee", width: '50%', padding: '0px 10px', height: '490px', overflowY: 'scroll' }}>
