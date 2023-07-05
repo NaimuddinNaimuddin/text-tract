@@ -18,6 +18,7 @@ import {
 import { storage } from "./firebase";
 import { v4 } from "uuid";
 import { readFileAsync } from "./helpers.js";
+import logo from "./assets/snak.jpg";
 
 function App() {
   const BASE_URL = import.meta.env.VITE_BU;
@@ -184,7 +185,7 @@ function App() {
     <div className="App">
       <div className="text-center fs-4 fw-bold">
         <img className="logo"
-          src="http://139.59.81.207/hrms/public/uploads/organisation/organisation_image_1651816504.jpg"
+          src={logo}
           alt="LOGO"
         />
         Handwriting Text Extraction OCR
