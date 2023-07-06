@@ -18,7 +18,7 @@ import {
 import { storage } from "./firebase";
 import { v4 } from "uuid";
 import { readFileAsync } from "./helpers.js";
-import logo from "./assets/snak.jpg";
+import logo from "./assets/snak.png";
 
 function App() {
   const BASE_URL = import.meta.env.VITE_BU;
